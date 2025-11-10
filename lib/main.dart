@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:torch_light/torch_light.dart';
 import 'package:provider/provider.dart';
 import 'settings.dart';
 import 'store.dart';
+import 'torch.dart';
+import 'pulse_grid.dart';
+
 
 void main() {
   runApp(
@@ -40,51 +42,29 @@ class TorchPage extends StatefulWidget {
 }
 
 class _TorchPageState extends State<TorchPage> {
-  bool _isTorchOn = false;
-  bool _blinkOn = false;
-  late final TorchStore store;
+  late final TorchController _torch;  
 
   @override
   void initState() {
     super.initState();
-    store = context.read<TorchStore>();
-    _torchLoop(); // start the continuous loop
+    final store = context.read<TorchStore>();
+    _torch = TorchController(store);
+    _torch.startLoop();
   }
 
-  void _torchLoop() async {
-    while (mounted) {
-      final interval = store.blinkIntervalMs.clamp(150, 1000);
-      final isConstant = store.isConstant;
-
-      if (_isTorchOn) {
-        if (isConstant) {
-          await TorchLight.enableTorch();
-        } else {
-          if (_blinkOn) {
-            await TorchLight.enableTorch();
-          } else {
-            await TorchLight.disableTorch();
-          }
-          _blinkOn = !_blinkOn;
-        }
-      } else {
-        await TorchLight.disableTorch();
-      }
-
-      await Future.delayed(Duration(milliseconds: interval));
-    }
+  @override
+  void dispose() {
+    _torch.stopLoop();
+    super.dispose();
   }
 
   void _toggleTorch() {
-    setState(() {
-      _isTorchOn = !_isTorchOn;
-      if (!_isTorchOn) _blinkOn = false; // reset blinking
-    });
+    setState(_torch.toggle);
   }
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.watch<TorchStore>(); // rebuild UI on settings changes
+    final _ = context.watch<TorchStore>();
 
     return Scaffold(
       appBar: AppBar(
@@ -100,37 +80,76 @@ class _TorchPageState extends State<TorchPage> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              _isTorchOn ? Icons.flash_on : Icons.flash_off,
-              size: 120,
-              color: _isTorchOn ? Colors.yellow : Colors.grey,
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _isTorchOn ? Colors.redAccent : Colors.green,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 16,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
+      body: Container(
+        color: Colors.black,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final circleSize = 50.0;
+            final crossAxisCount = (constraints.maxWidth / (circleSize + 10))
+                .floor();
+            final mainAxisCount =
+                ((constraints.maxHeight - 90) / (circleSize + 10)).floor();
+            final totalCount = crossAxisCount * mainAxisCount;
+
+            return _torch.isOn
+                ? const PulsingGrid()
+                : GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(10),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+                    itemCount: totalCount,
+                    itemBuilder: (context, index) => Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color.fromARGB(
+                          255,
+                          255,
+                          17,
+                          0,
+                        ).withValues(alpha: 0.2),
+                      ),
+                    ),
+                  );
+          },
+        ),
+      ),
+
+      bottomNavigationBar: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          height: 70,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _torch.isOn ? Colors.redAccent : Colors.green,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
               ),
-              onPressed: _toggleTorch,
-              child: Text(
-                _isTorchOn ? 'Turn Off' : 'Turn On1',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
             ),
-          ],
+            onPressed: _toggleTorch,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  _torch.isOn ? 'Turn Off' : 'Turn On',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Icon(
+                  _torch.isOn ? Icons.flash_off : Icons.flash_on,
+                  size: 24,
+                  color: _torch.isOn ? Colors.grey : Colors.yellow,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
