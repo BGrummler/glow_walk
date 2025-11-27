@@ -9,8 +9,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 // lib/main.dart
 
-// TODO: Add a slider for pulsing grid interval
-// TODO: Refactor TorchController to support independent intervals
+// TODO: add display animation fade in / out logic when toggling torch
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

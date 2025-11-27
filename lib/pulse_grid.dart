@@ -12,7 +12,6 @@ class _PulsingGridState extends State<PulsingGrid>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late Animation<double> _animation;  // <-- declare this
-  late int _blinkInterval;
 
   @override
   void initState() {
