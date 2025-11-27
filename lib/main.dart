@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 import 'settings.dart';
 import 'store.dart';
 import 'torch.dart';
 import 'pulse_grid.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
+
+// lib/main.dart
+
+// TODO: Add a slider for pulsing grid interval
+// TODO: Refactor TorchController to support independent intervals
+// TODO: reactive on off button on screen rotation
 
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+  
   runApp(
     ChangeNotifierProvider(
       create: (_) => TorchStore(),
@@ -47,13 +61,14 @@ class _TorchPageState extends State<TorchPage> {
   @override
   void initState() {
     super.initState();
+    WakelockPlus.enable();
     final store = context.read<TorchStore>();
     _torch = TorchController(store);
-    _torch.startLoop();
   }
 
   @override
   void dispose() {
+    WakelockPlus.disable();
     _torch.stopLoop();
     super.dispose();
   }
