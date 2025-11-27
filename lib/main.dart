@@ -11,8 +11,6 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 // TODO: Add a slider for pulsing grid interval
 // TODO: Refactor TorchController to support independent intervals
-// TODO: reactive on off button on screen rotation
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

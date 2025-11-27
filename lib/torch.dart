@@ -25,8 +25,10 @@ class TorchController {
     _running = true;
 
     while (_running) {
-      final interval = store.blinkIntervalMs.clamp(150, 1000);
-      final isConstant = store.isConstant;
+      //final interval = store.blinkIntervalMs.clamp(150, 1000);
+      final onDurationMs = store.flashOnDurationMs.clamp(150, 1000);
+      final offDurationMs = store.flashOffDurationMs.clamp(150, 1000);
+      final isConstant = store.flashConstant;
 
       if (_isTorchOn) {
         if (isConstant) {
@@ -43,7 +45,7 @@ class TorchController {
         await TorchLight.disableTorch();
       }
 
-      await Future.delayed(Duration(milliseconds: interval));
+      await Future.delayed(Duration(milliseconds: _blinkOn ? offDurationMs :onDurationMs));
     }
   }
 

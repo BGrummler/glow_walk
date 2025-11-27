@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'store.dart';
 
+//Slider Constatnts
+const int divisions = 17;
+const double minDuration = 150;
+const double maxDuration = 1000;
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -20,39 +25,129 @@ class _SettingsPageState extends State<SettingsPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Mode toggle
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Mode'),
-                ElevatedButton(
-                  onPressed: () {
-                    final store = context.read<TorchStore>();
-                    store.isConstant =
-                        !store.isConstant; // automatically rebuilds TorchPage
-                  },
-                  child: Text(store.isConstant ? 'Constant' : 'Blinking'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
+            Card(
+              margin: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Flash Mode toggle
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Flash Mode'),
+                      ElevatedButton(
+                        onPressed: () {
+                          final store = context.read<TorchStore>();
+                          store.flashConstant = !store
+                              .flashConstant; // automatically rebuilds TorchPage
+                        },
+                        child: Text(
+                          store.flashConstant ? 'Constant' : 'Blinking',
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
 
-            // Blink interval slider
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Blink Interval'),
-                Text('${store.blinkIntervalMs} ms'),
-              ],
+                  // Flash On Duration slider
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Flash On Duration'),
+                      Text('${store.flashOnDurationMs} ms'),
+                    ],
+                  ),
+                  Slider(
+                    value: store.flashOnDurationMs.toDouble(),
+                    min: minDuration,
+                    max: maxDuration,
+                    divisions: divisions,
+                    onChanged: store.flashConstant
+                        ? null // disable slider in constant mode
+                        : (value) => store.flashOnDurationMs = value.toInt(),
+                  ),
+                  //Flash Off Duration slider
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Flash Off Duration'),
+                      Text('${store.flashOffDurationMs} ms'),
+                    ],
+                  ),
+                  Slider(
+                    value: store.flashOffDurationMs.toDouble(),
+                    min: minDuration,
+                    max: maxDuration,
+                    divisions: divisions,
+                    onChanged: store.flashConstant
+                        ? null // disable slider in constant mode
+                        : (value) => store.flashOffDurationMs = value.toInt(),
+                  ),
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
-            Slider(
-              value: store.blinkIntervalMs.toDouble(),
-              min: 150,
-              max: 1000,
-              divisions: 17,
-              onChanged: (value) => store.blinkIntervalMs = value.toInt(),
+
+            Card(
+              margin: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Display Mode toggle
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Display Mode'),
+                      ElevatedButton(
+                        onPressed: () {
+                          final store = context.read<TorchStore>();
+                          store.displayConstant = !store.displayConstant;
+                        },
+                        child: Text(
+                          store.displayConstant ? 'Constant' : 'Blinking',
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Display On Duration slider
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Display On Duration'),
+                      Text('${store.displayOnDurationMs} ms'),
+                    ],
+                  ),
+                  Slider(
+                    value: store.displayOnDurationMs.toDouble(),
+                    min: minDuration,
+                    max: maxDuration,
+                    divisions: divisions,
+                    onChanged: store.displayConstant
+                        ? null // disable slider in constant mode
+                        : (value) => store.displayOnDurationMs = value.toInt(),
+                  ),
+                  //Display Off Duration slider
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Display Off Duration'),
+                      Text('${store.displayOffDurationMs} ms'),
+                    ],
+                  ),
+                  Slider(
+                    value: store.displayOffDurationMs.toDouble(),
+                    min: minDuration,
+                    max: maxDuration,
+                    divisions: divisions,
+                    onChanged: store.displayConstant
+                        ? null // disable slider in constant mode
+                        : (value) => store.displayOffDurationMs = value.toInt(),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 30),
           ],
         ),
       ),
