@@ -10,9 +10,8 @@ GlowWalk is a simple safety app designed to make pedestrians more visible in low
 - Independent control: Turn flash and display on/off separately.
 - Lightweight: Minimal battery impact even at full brightness.
 
-## Screenshots
-
-*(Add a couple of screenshots of the app here)*
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Getting Started
 
@@ -29,5 +28,5 @@ You can download the latest release APK from the [Releases](https://github.com/y
 
 1. Clone the repo:  
 ```bash
-git clone https://github.com/yourusername/glow_walk.git
+git clone https://github.com/BGrummler/glow_walk
 cd glow_walk
