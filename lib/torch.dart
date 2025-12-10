@@ -2,22 +2,40 @@ import 'package:torch_light/torch_light.dart';
 import 'store.dart';
 
 class TorchController {
-  bool _isTorchOn = false;
-  bool _blinkOn = false;
   bool _running = false;
+  bool _logicOn = false;     // User toggle
+  bool _torchIsOn = false;   // Actual hardware state
+  bool _blinkOn = false;
+
   final TorchStore store;
 
   TorchController(this.store);
 
-  bool get isOn => _isTorchOn;
+  bool get isOn => _logicOn;
 
   void toggle() {
-    _isTorchOn = !_isTorchOn;
-    if (!_isTorchOn) {
+    _logicOn = !_logicOn;
+
+    if (!_logicOn) {
       _blinkOn = false;
       stopLoop();
-      } else {
-      startLoop();}
+    } else {
+      startLoop();
+    }
+  }
+
+  Future<void> _torchOn() async {
+    if (!_torchIsOn) {
+      await TorchLight.enableTorch();
+      _torchIsOn = true;
+    }
+  }
+
+  Future<void> _torchOff() async {
+    if (_torchIsOn) {
+      await TorchLight.disableTorch();
+      _torchIsOn = false;
+    }
   }
 
   Future<void> startLoop() async {
@@ -25,32 +43,36 @@ class TorchController {
     _running = true;
 
     while (_running) {
-      //final interval = store.blinkIntervalMs.clamp(150, 1000);
-      final onDurationMs = store.flashOnDurationMs.clamp(150, 1000);
-      final offDurationMs = store.flashOffDurationMs.clamp(150, 1000);
-      final isConstant = store.flashConstant;
+      final onMs  = store.flashOnDurationMs.clamp(150, 1000);
+      final offMs = store.flashOffDurationMs.clamp(150, 1000);
 
-      if (_isTorchOn) {
-        if (isConstant) {
-          await TorchLight.enableTorch();
-        } else {
-          if (_blinkOn) {
-            await TorchLight.enableTorch();
-          } else {
-            await TorchLight.disableTorch();
-          }
-          _blinkOn = !_blinkOn;
-        }
-      } else {
-        await TorchLight.disableTorch();
+      // 🔴 User disabled flash → keep turned off
+      if (!_logicOn || !store.flashEnabled) {
+        await _torchOff();
+        await Future.delayed(Duration(milliseconds: offMs));
+        continue;
       }
 
-      await Future.delayed(Duration(milliseconds: _blinkOn ? offDurationMs :onDurationMs));
+      // 🔵 Constant mode
+      if (store.flashConstant) {
+        await _torchOn();
+        await Future.delayed(Duration(milliseconds: onMs));
+        continue;
+      }
+
+      // 🟡 Blinking mode
+      if (_torchIsOn) {
+        await _torchOff();
+        await Future.delayed(Duration(milliseconds: offMs));
+      } else {
+        await _torchOn();
+        await Future.delayed(Duration(milliseconds: onMs));
+      }
     }
   }
 
   void stopLoop() {
     _running = false;
-    TorchLight.disableTorch();
+    _torchOff();
   }
 }

@@ -1,16 +1,33 @@
-# glow_walk
+# glow_walk# GlowWalk
 
-A new Flutter project.
+GlowWalk is a simple safety app designed to make pedestrians more visible in low-light conditions. Using your phone’s display and flashlight, it creates pulsing lights in customizable patterns, helping you stand out during walks in the dark—especially useful for children walking to school in winter.
+
+## Features
+
+- Flashlight: Constant or blinking mode with adjustable on/off duration.
+- Screen display: Pulsing grid with adjustable on/off duration.
+- Color selection: Choose from high-visibility colors (Red, Green, Yellow).
+- Independent control: Turn flash and display on/off separately.
+- Lightweight: Minimal battery impact even at full brightness.
+
+## Screenshots
+
+*(Add a couple of screenshots of the app here)*
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Requirements
 
-A few resources to get you started if this is your first Flutter project:
+- Android device (Flutter is currently set up for Android builds)
+- Flutter SDK (for building from source)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+You can download the latest release APK from the [Releases](https://github.com/yourusername/glow_walk/releases) page and install it directly on your device.
+
+### Building from Source
+
+1. Clone the repo:  
+```bash
+git clone https://github.com/yourusername/glow_walk.git
+cd glow_walk

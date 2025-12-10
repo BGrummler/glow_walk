@@ -76,7 +76,7 @@ class _TorchPageState extends State<TorchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.watch<TorchStore>();
+    final store = context.watch<TorchStore>();
 
     return Scaffold(
       appBar: AppBar(
@@ -117,12 +117,7 @@ class _TorchPageState extends State<TorchPage> {
                     itemBuilder: (context, index) => Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color.fromARGB(
-                          255,
-                          255,
-                          17,
-                          0,
-                        ).withValues(alpha: 0.2),
+                        color: store.displayColor.withValues(alpha: 0.2),
                       ),
                     ),
                   );

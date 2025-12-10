@@ -1,15 +1,37 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // provides ChangeNotifier
 
 class TorchStore extends ChangeNotifier {
   static const int minInterval = 150;
   static const int maxInterval = 1000;
 
+  bool _flashEnabled = true;
+  bool _displayEnabled = true;
   bool _flashConstant = true;    // true = flash is constant, false = blinking
   bool _displayConstant = false; // true = display is constant, false = blinking
   int _flashOnDurationMs = 250; // duration the flash stays on during a blink
   int _flashOffDurationMs = 250; // duration the flash stays off during a blink
   int _displayOnDurationMs = 250; // duration the display stays bright during a blink
   int _displayOffDurationMs = 250; // duration the display stays dim during a blink
+  Color _displayColor = Colors.red;
+  Color get displayColor => _displayColor;
+
+  set displayColor(Color value) {
+    _displayColor = value;
+    notifyListeners();
+  }
+
+  bool get flashEnabled => _flashEnabled;
+  set flashEnabled(bool val) {
+    _flashEnabled = val;
+    notifyListeners();
+  }
+
+  bool get displayEnabled => _displayEnabled;
+  set displayEnabled(bool val) {
+    _displayEnabled = val;
+    notifyListeners();
+  }
 
   bool get flashConstant => _flashConstant;
   set flashConstant(bool val) {
