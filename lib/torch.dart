@@ -61,13 +61,15 @@ class TorchController {
       }
 
       // 🟡 Blinking mode
-      if (_torchIsOn) {
-        await _torchOff();
-        await Future.delayed(Duration(milliseconds: offMs));
-      } else {
+      if (_blinkOn) {
         await _torchOn();
         await Future.delayed(Duration(milliseconds: onMs));
+      } else {
+        await _torchOff();
+        await Future.delayed(Duration(milliseconds: offMs));
       }
+
+      _blinkOn = !_blinkOn;
     }
   }
 
